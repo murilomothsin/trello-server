@@ -16,6 +16,16 @@ router.get('/', function(req, res, next) {
 
 });
 
+router.get('/:id', function(req, res, next) {
+  User.findById(req.params.id,'_id name email', function(err, user){
+    if(err){
+      res.status(500);
+    }else{
+      res.json({user: user});
+    }
+  });
+
+});
 
 router.post('/login', function(req, res, next) {
   User.findOne({ email: req.body.email }, function (err, user) {
