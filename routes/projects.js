@@ -63,6 +63,46 @@ router.post('/', function(req, res) {
 
 });
 
+// define the home page route
+router.put('/:id', function(req, res) {
+  Project.findById(req.params.id, function(err, project){
+    if(err){
+      res.status(500).json(err);
+      return ;
+    }
+    if(project === null || project === undefined){
+      return res.status(404).send({ success: false, message: 'Project not found.' });
+    }
+    console.log(req.body);
+    res.json({ project: project });
+    project.name = req.body.name;
+    project.description = req.body.description;
+    
+  });
+
+/*
+  var project = new Project();
+  project.name = req.body.name;
+  project.description = req.body.description;
+  project.creator = req.decoded._id;
+  for (i in req.body.boards) {
+    board = new Board();
+    board.name = req.body.boards[i].name;
+    board.creator = req.decoded._id;
+    project.boards.push(board);
+  }
+  console.log(project);
+  project.save(function(err, proj) {
+    if(err){
+      res.status(500).json({error: err})
+    }
+    console.log(proj);
+    res.json({ project: proj });
+  });
+*/
+
+});
+
 
 router.get('/:id', function(req, res) {
   Project.findById(req.params.id, function(err, project){

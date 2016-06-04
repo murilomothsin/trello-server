@@ -69,37 +69,31 @@ router.post('/register', function(req, res, next) {
     res.status(400).json({ type: false, data: "Invalid data." });
   }
   User.findOne({email: req.body.email}, function(err, user) {
-    res.json({user: user});
-    return ;
-  });
-  if(1==2){
-    User.findOne({email: req.body.email}, function(err, user) {
-      if (err) {
-        res.status(500).json({ type: false, data: "Error occured: " + err });
-        return ;
-      }
-      if (user) {
-        res.status(406).json({ type: false, data: "User already exists!"});
-        return ;
-      }
-      var userModel = new User(req.body);
-      console.log(req.body);
-      console.log(userModel);
-      // userModel.email = req.body.email;
-      // userModel.name = req.body.name;
-      // userModel.password = req.body.password;
-      userModel.save(function(err, user) {
-        console.log(err);
-        console.log(user);
-        res.json({ type: true, data: user });
-        // user.token = jwt.sign(user, app.get('SECRET'), {expiresInMinutes: 1440});
-        // user.save(function(err, user1) {
-        //   res.json({ type: true, data: user1, token: user1.token });
-        // });
-      });
+    if (err) {
+      res.status(500).json({ type: false, data: "Error occured: " + err });
+      return ;
+    }
+    if (user) {
+      res.status(406).json({ type: false, data: "User already exists!"});
+      return ;
+    }
+    var userModel = new User(req.body);
+    userModel.save(function(err, user) {
+      res.json({ type: true, data: user });
     });
-  }
+  });
 });
 
+router.post('/valid_token', function(req, res, next) {
+  User.findOne({token: req.body.token}, function(err, user){
+    if(err) { res.status(404).json({ type: false, data: "User not found!"}); return ; }
+    if(user) { 
+      res.json({type: true, data: user}); return ; 
+    }else{
+      res.status(404).json({ type: false, data: "User not found!"}); 
+      return ;
+    }
+  });
+});
 
 module.exports = router;
