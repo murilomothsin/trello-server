@@ -5,6 +5,7 @@ var Task = require('./Task.js');
 var BoardSchema = new Schema({
     creator: { type: Schema.Types.ObjectId, ref: 'User' },
     name: String,
+    deleted: Boolean,
     tasks: [Task.schema],
     created_at: { type: Date, default: Date.now }
 });

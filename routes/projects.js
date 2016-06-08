@@ -6,13 +6,11 @@ var Board = require('../models/Board.js');
 
 
 router.use(function(req, res, next) {
-  console.log(req.headers);
   var token = req.headers['Authorization'] || req.headers['authorization'];
   if (token) {
     jwt.verify(token, "supersecret", function(err, decoded) {
       if (err) { return res.json({ success: false, message: 'Failed to authenticate token.', err: err }); }
       else {
-        console.log(decoded);
         req.decoded = decoded;
         next();
       }
@@ -24,23 +22,16 @@ router.use(function(req, res, next) {
 
 // define the home page route
 router.get('/', function(req, res) {
-  console.log('Projets...');
-  console.log(req.decoded._id);
   Project.find({ $or:[{creator: req.decoded._id}, {users: { $in: [req.decoded._id] }}] }, function(err, projects){
     if(err){
-      res.status(500).json(err);
-      return ;
+      return res.status(500).json(err);
     }
     res.json({ projects: projects });
   })
 });
 
-// define the home page route
+// Rota para criar novos projetos
 router.post('/', function(req, res) {
-  
-
-  console.log(req.body);
-
   var project = new Project();
   project.name = req.body.name;
   project.description = req.body.description;
@@ -51,65 +42,35 @@ router.post('/', function(req, res) {
     board.creator = req.decoded._id;
     project.boards.push(board);
   }
-  console.log(project);
-
   project.save(function(err, proj) {
     if(err){
-      res.status(500).json({error: err})
+      return res.status(500).json({error: err});
     }
-    console.log(proj);
     res.json({ project: proj });
   });
 
 });
 
-// define the home page route
+// Rota para atualizar projeto
 router.put('/:id', function(req, res) {
   Project.findById(req.params.id, function(err, project){
-    if(err){
-      res.status(500).json(err);
-      return ;
-    }
-    if(project === null || project === undefined){
-      return res.status(404).send({ success: false, message: 'Project not found.' });
-    }
-    console.log(req.body);
-    res.json({ project: project });
+    if(err){ return res.status(500).json(err); }
+    if(project === null || project === undefined){ return res.status(404).send({ success: false, message: 'Project not found.' }); }
     project.name = req.body.name;
     project.description = req.body.description;
-    
-  });
+    project.boards = req.body.boards;
+    project.save(function(err, proj) {
+      if(err){ return res.status(500).json({error: err}); }
+      res.json({ project: proj });
+    });
 
-/*
-  var project = new Project();
-  project.name = req.body.name;
-  project.description = req.body.description;
-  project.creator = req.decoded._id;
-  for (i in req.body.boards) {
-    board = new Board();
-    board.name = req.body.boards[i].name;
-    board.creator = req.decoded._id;
-    project.boards.push(board);
-  }
-  console.log(project);
-  project.save(function(err, proj) {
-    if(err){
-      res.status(500).json({error: err})
-    }
-    console.log(proj);
-    res.json({ project: proj });
   });
-*/
-
 });
 
-
+// Rota para retornar um projeto pelo seu _id
 router.get('/:id', function(req, res) {
   Project.findById(req.params.id, function(err, project){
-    if(err){
-      res.status(500).json(err);
-      return ;
-    }
+    if(err){ return res.status(500).json(err); }
     res.json({ project: project });
   })
 });

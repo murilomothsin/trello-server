@@ -4,6 +4,8 @@ var Schema = mongoose.Schema;
 var TaskSchema = new Schema({
     creator: { type: Schema.Types.ObjectId, ref: 'User' },
     name: String,
+    deleted: Boolean,
+    complete: Boolean,
     responsibles: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     created_at: { type: Date, default: Date.now }
 });

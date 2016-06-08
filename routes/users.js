@@ -86,11 +86,11 @@ router.post('/register', function(req, res, next) {
 
 router.post('/valid_token', function(req, res, next) {
   User.findOne({token: req.body.token}, function(err, user){
-    if(err) { res.status(404).json({ type: false, data: "User not found!"}); return ; }
+    if(err) { res.status(401).json({ type: false, data: "User not found!"}); return ; }
     if(user) { 
       res.json({type: true, data: user}); return ; 
     }else{
-      res.status(404).json({ type: false, data: "User not found!"}); 
+      res.status(401).json({ type: false, data: "User not found!"}); 
       return ;
     }
   });
