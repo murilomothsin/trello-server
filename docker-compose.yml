@@ -1,0 +1,11 @@
+version: '3'
+services:
+  db:
+    image: mongo
+  web:
+    build: .
+    command: bash -c "bin/www"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db

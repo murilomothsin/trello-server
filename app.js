@@ -11,7 +11,7 @@ var projects = require('./routes/projects');
 
 var app = express();
 
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/trello');
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://db:27017/trello');
 
 app.use(logger('dev'));
 app.use(bodyParser.json());
